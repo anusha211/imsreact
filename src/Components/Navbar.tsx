@@ -1,8 +1,10 @@
 import React from 'react'
 
-type Props = {}
+interface NavbarProps {
+    logout: () => void;
+  }
 
-const Navbar = (props: Props) => {
+const Navbar = ({logout}: NavbarProps) => {
   return (
     <div> <nav className="bg-gray-800 text-white p-4">
     <div className="max-w-7xl mx-auto px-4">
@@ -14,7 +16,7 @@ const Navbar = (props: Props) => {
                 <ul className="flex space-x-4">
                     <li><a href="#home" className="hover:text-gray-300">Home</a></li>
                     <li><a href="#users" className="hover:text-gray-300">Users</a></li>
-                    <li><a href="#users" className="hover:text-gray-300">Logout</a></li>
+                    <li><a href="" className="hover:text-gray-300" onClick={logout}>Logout</a></li>
                 </ul>
             </div>
            

@@ -1,90 +1,55 @@
+// src/Components/Loginform.tsx
 
-import React,{useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import './Forms.css';
 
-interface LoginFormErrors {
-  username?: string;
-  password?: string;
-}
-
-const validateUsername = (username: string): string | undefined => {
-    if (!username.trim()) {
-      console.log('username is empty');
-      return 'username is required';
-   
-    }
-  };
-  
-  const validatePassword = (password: string): string | undefined => {
-    if (!password.trim()) {
-      console.log('password is required');
-      return 'Password is required';
-    }
-  };
-
 const Login: React.FC = () => {
-
-  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [errors, setErrors] = useState<LoginFormErrors>({});
- // const navigate = useNavigate();
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { login } = useAuth();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      if (validateForm()) {
-          // Your login logic here
-          if(username=='user'&&password=='password'){
-            alert('login success!!')
-          console.log('Logging successful:', username);
-         // navigate('/home'); // Navigate to home page
-          }
-          else{
-            alert('incorrect password!!')
-            console.log('password incorrect!');
-          }
-      } else {
-          console.log('Form has errors. Cannot submit.');
-      }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (validateForm()) {
+      login(email, password);
+    }
   };
 
-  const validateForm = (): boolean => {
-      const newErrors: LoginFormErrors = {
-        
-        username: validateUsername(username),
-        password: validatePassword(password)
-      };
-
-    
-      const valid = !newErrors.username && !newErrors.password;
-
-      setErrors(newErrors);
-      return valid;
+  const validateForm = () => {
+    let valid = true;
+    const newErrors: { [key: string]: string } = {};
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+      valid = false;
+    }
+    if (!password.trim()) {
+      newErrors.password = 'Password is required';
+      valid = false;
+    }
+    setErrors(newErrors);
+    return valid;
   };
- 
+
   return (
-   
-<div>
-   <h3 style={{color : "darkolivegreen", marginBottom: "40px",marginTop: "0px"}}>Login</h3>
-<form onSubmit={handleSubmit} >
-   <div className="input-group">
-       <div className="input-field">
-           <input type="text" placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} required></input>
-       </div>
-       <div className="input-field">
-           <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required></input>
-       </div>
-       {errors.password && <span className="error">{errors.password}</span>}
-         <button type="submit" style={{marginTop:"10px"}}>Login</button>   
-   </div>      
-</form>
- </div>
+    <div>
+      <h3 style={{ color: "darkolivegreen", marginBottom: "40px", marginTop: "0px" }}>Login</h3>
+      <form onSubmit={handleSubmit} id="signupform">
+        <div className="input-group">
+          <div className="input-field">
+            <input type="email" placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
+            {errors.email && <span className="error">{errors.email}</span>}
+          </div>
+          <div className="input-field">
+            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+          {errors.password && <span className="error">{errors.password}</span>}
+          <button type="submit" style={{ marginTop: "10px" }}>Login</button>
+        </div>
+      </form>
+    </div>
   );
 };
+
 export default Login;
-export {validatePassword, validateUsername};
-
-
-
-
-

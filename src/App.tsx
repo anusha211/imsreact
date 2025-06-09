@@ -2,29 +2,38 @@ import React, { useState } from 'react';
 import Login from './Components/Loginform'
 import './App.css';
 import Signup from './Components/Signupform';
-import Welcome from './Components/Welcome';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './Components/Welcome';
+import ProtectedRoute from './Components/ProtectedRoute';
+import AdminDashboard from './Components/AdminDashboard';
+import { useAuth } from './context/AuthContext';
+import Unauthorized from './Components/Unauthorized';
+
 
 
 const App: React.FC = () => {
 
   const [isLoginFormVisible, setIsLoginFormVisible] = useState(true);
 
+
   const toggleForm = () => {
     setIsLoginFormVisible(!isLoginFormVisible);
   };
 
+  const { isAuthenticated, userRole } = useAuth();
+
   return (
-    <Router>
+   
       <div className="App">
         <Routes>
           <Route path="/"
-            element={
-
-              <>
+            element={ isAuthenticated ? (
+              <Navigate to={userRole === 'ADMIN' ? "/admin" : "/home"} />
+            ) : (
                 <div className='Maincontainer'>
+                  
                   <div className="form-box">
-                    {isLoginFormVisible ? <Login /> : <Signup />}
+                    {isLoginFormVisible ? <Login  /> : <Signup />}
                     <p>
                       {isLoginFormVisible
                         ? "Don't have an account? "
@@ -35,17 +44,34 @@ const App: React.FC = () => {
                     </p>
                   </div>
                 </div>
-              </>
+            )
 
             }
 
           />
           
-          <Route path="/home" element={<Welcome />} />
+          <Route element={<ProtectedRoute  requiredRole="USER" />}>
+            <Route path="/home" element={<HomePage  />} />
+          </Route>
+
+         <Route element={<ProtectedRoute  requiredRole="ADMIN" />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+
+          <Route
+            path="/unauthorized"
+            element={
+             <Unauthorized></Unauthorized>
+            }
+          />
+
         </Routes>
       </div>
-    </Router>
+   
   );
 }
 
 export default App;
+
+
+
